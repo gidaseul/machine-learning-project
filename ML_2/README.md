@@ -9,7 +9,7 @@
 
 | 보고서 PDF | 발표자료 PDF |
 | --- | --- |
-| [![ML_2 report cover](../assets/images/ml2-report-cover.png)](<./ML프로젝트2_02팀/ML_2(Image Classification  with Representation Learning).pdf>) | [![ML_2 presentation cover](../assets/images/ml2-ppt-cover.png)](<./ML프로젝트2_02팀/ML_2(ppt).pdf>) |
+| [![ML_2 report cover](../assets/images/ml2-report-cover.png)](<./ML프로젝트2_02팀/ML_2(Image Classification  with Representation Learning).pdf>) | [![ML_2 presentation cover](../assets/images/ml2-ppt-cover.png)](<./ML프로젝트2_02팀/ML_2(ppt).pdf>) |
 
 ## Focus
 
@@ -49,9 +49,9 @@
 
 ![Representation learning clustering and latent-space evidence](../assets/images/representation-latent-evidence.png)
 
-- 출처: `[2024-2_ML] Project1 specifications/Project.ipynb`, `../mnist/mnist_latent_feature.ipynb`, `../sportsball/sportsball_latent_feature.ipynb`
-- 구성: K-Means, GMM, 그리고 t-SNE 기반 feature-space 시각화
-- 의미: MNIST는 클래스 간 분리가 비교적 선명하고, SportsBall은 배경과 객체 변화 때문에 latent space가 더 넓고 복잡하게 퍼지는 경향을 보여 줍니다.
+아래쪽 두 t-SNE 패널은 CNN 중간 특징 벡터를 2차원으로 줄이고 정답 클래스에 따라 색을 입힌 것입니다. SportsBall에서 클래스가 겹치는 구간을 정성적으로 비교했습니다. 분리의 정도는 분류 정확도나 표현학습의 개선을 입증하는 수치로 사용할 수 없습니다.
+
+[MNIST 특징 추출 및 시각화](../mnist/mnist_latent_feature.ipynb) · [SportsBall 특징 추출 및 시각화](../sportsball/sportsball_latent_feature.ipynb)
 
 ## Why This Method Matters
 
@@ -62,14 +62,15 @@
 
 ## Related Files
 
-- [`ML_2 최종 보고서 PDF`](<./ML프로젝트2_02팀/ML_2(Image Classification  with Representation Learning).pdf>)
-- [`ML_2 발표자료 PDF`](<./ML프로젝트2_02팀/ML_2(ppt).pdf>)
-- [`ML_2 코드 압축본`](<./ML프로젝트2_02팀/ML_소스코드_02팀 .zip>)
+- [`ML_2 최종 보고서 PDF`](<./ML프로젝트2_02팀/ML_2(Image Classification  with Representation Learning).pdf>)
+- [`ML_2 발표자료 PDF`](<./ML프로젝트2_02팀/ML_2(ppt).pdf>)
+- [SportsBall 대조학습 실험](../sportsball/vae_latent.ipynb)
 
 ## Notes Before Reproducing
 
-- 노트북 내부 경로가 과거 로컬 환경인 `/home/gidaseul/Documents/GitHub/ML_2/...` 로 남아 있어 현재 폴더 구조에 맞는 수정이 필요합니다.
-- `contrastive_t_sne(test).ipynb`는 `contrastive_weights3.pth`를 불러오도록 되어 있지만, 현재 폴더에는 `contrastive_weights.pth`가 있어 파일명 또는 경로를 맞춰야 합니다.
+- `datas/MNIST`에는 학습 450장·테스트 50장, `datas/SportsBall`에는 학습 1,000장·테스트 100장이 있습니다. 위 노트북의 `train_dir`, `test_dir`을 체크아웃한 저장소의 해당 `train`, `test` 폴더로 바꿉니다. SportsBall 체크포인트 경로도 해당 노트북의 위치에 맞게 지정합니다.
+- 공개 SportsBall 표현 노트북에는 클래스 라벨과 유클리드 거리를 쓰는 대조 손실, 분류 손실, 복원 손실을 함께 쓴 실험이 있습니다. 팀 보고서 §3.2의 InfoNCE 실험과 구분해 읽어야 합니다. `9%`는 팀 보고서의 해당 실행 기록입니다.
+- CNN 노트북의 일부 셀은 테스트 손실을 매 epoch 확인하고 최적 체크포인트 선택에도 사용합니다. 당시 테스트 수치는 실험 과정의 기록으로 읽고, 다시 비교할 때는 학습에서 검증 세트를 분리한 뒤 테스트는 마지막에 한 번만 평가합니다.
 
 ## Summary
 

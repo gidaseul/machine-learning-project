@@ -15,7 +15,7 @@
 | 구분 | 보고서 PDF | 발표자료 PDF |
 | --- | --- | --- |
 | 방법 1. 단순 이미지 분류 | [![ML_1 report cover](assets/images/ml1-report-cover.png)](<./ML_1/ML_1(Image Classification  with Machine Learning).pdf>) | [![ML_1 presentation cover](assets/images/ml1-ppt-cover.png)](<./ML_1/ML_1(ppt).pdf>) |
-| 방법 2. 표현학습 | [![ML_2 report cover](assets/images/ml2-report-cover.png)](<./ML_2/ML프로젝트2_02팀/ML_2(Image Classification  with Representation Learning).pdf>) | [![ML_2 presentation cover](assets/images/ml2-ppt-cover.png)](<./ML_2/ML프로젝트2_02팀/ML_2(ppt).pdf>) |
+| 방법 2. 표현학습 | [![ML_2 report cover](assets/images/ml2-report-cover.png)](<./ML_2/ML프로젝트2_02팀/ML_2(Image Classification  with Representation Learning).pdf>) | [![ML_2 presentation cover](assets/images/ml2-ppt-cover.png)](<./ML_2/ML프로젝트2_02팀/ML_2(ppt).pdf>) |
 
 ## 기술 스택
 
@@ -63,12 +63,13 @@ MNIST는 특징 비교 실험에 적합했고, SportsBall은 실제 이미지 �
 
 | 방법 | 데이터 | 핵심 성능 | 해석 |
 | --- | --- | --- | --- |
-| 단순 이미지 분류 | MNIST | `HOG + SVM` 테스트 정확도 `96.0%` | 구조적 특징 기반 접근이 매우 강하게 작동 |
-| 단순 이미지 분류 | SportsBall | `XGBoost` 교차검증 정확도 `64.78%` | ROI와 특징 조합이 baseline보다 의미 있게 개선 |
-| 단순 이미지 분류 | SportsBall | 최종 테스트 정확도 `37.37%` | 실제 복잡한 이미지에서는 전처리 품질이 성능을 크게 좌우 |
+| 단순 이미지 분류 | MNIST | `HOG + SVM` 내부 검증 `95.56%`, 테스트 `94.0%` | 손글씨를 구성하는 획의 방향 정보를 HOG로 보존 |
+| 단순 이미지 분류 | SportsBall | ROI·HOG·색상 히스토그램과 `XGBoost`로 교차검증 약 `65%`, 별도 테스트 약 `37%` | 교차검증에서 본 성능이 별도 테스트에서 유지되지 않음 |
 | 표현학습 | MNIST | 테스트 정확도 `98.00%` | latent representation이 비교적 안정적으로 형성 |
 | 표현학습 | SportsBall | base model 테스트 정확도 `48.00%` | 표현학습 비교를 위한 기준점 역할 |
-| 표현학습 | SportsBall | autoencoder / contrastive 실험에서 `10%`, `9%` 수준 구간 확인 | 성능 향상보다 실패 원인 해석의 의미가 더 큼 |
+| 표현학습 | SportsBall | Autoencoder `10%`, 대조학습 `9%` | 10개 클래스를 균등하게 추측할 때 기대 정확도인 `10%` 부근 |
+
+수치는 팀 보고서의 당시 실험 기록입니다. 고전적 분류의 MNIST 검증은 학습 폴더 450장 중 90장을 떼어 했고, 별도 테스트는 50장이었습니다. 공개된 CNN 노트북은 `test` 폴더 손실을 매 epoch 확인해 체크포인트도 선택하므로, 이 표를 동일한 조건의 독립 벤치마크로 해석하기 어렵습니다.
 
 ## 방법 1. 단순 이미지 분류
 
@@ -92,17 +93,14 @@ MNIST는 특징 비교 실험에 적합했고, SportsBall은 실제 이미지 �
 - 전처리 순서도 성능에 영향을 주었고, `auto_canny -> lighting_correction -> morph_gradient` 순서가 더 좋은 결과를 보였습니다.
 
 ### 주요 결과
-- MNIST `HOG + SVM` 테스트 정확도: `96.0%`
-- SportsBall `XGBoost` 교차검증 정확도: `64.78%`
-- SportsBall 최종 테스트 정확도: `37.37%`
+- MNIST `HOG + SVM` 별도 테스트에서 50장 중 47장(`94.0%`)을 맞혔습니다.
+- SportsBall은 팀 보고서에서 교차검증 약 `65%`, 별도 테스트 약 `37%`를 기록했습니다. 보고서는 공이 아닌 영역이 잘린 테니스 사진을 ROI 실패 사례로 다룹니다.
 
 ### 시각 증거
 
 ![Project 1 ROI extraction evidence](assets/images/classical-roi-evidence.png)
 
-- 출처: `ML_1/ML_소스코드_02팀.ipynb`
-- 구성: `원본 -> 전처리 결과 -> 추출 ROI`
-- 의미: SportsBall 분류에서 분류기 이전 단계인 ROI 품질이 얼마나 중요한지 직접 보여 줍니다.
+원본에 잡은 영역, 전처리 결과, 최종 ROI를 나란히 비교합니다. ROI에서 공이 빠지면 그 뒤의 HOG와 색상 히스토그램에도 배경 쪽 특징이 들어갑니다. 구체적인 오분류 사례는 [팀 보고서](<./ML_1/ML_1(Image Classification  with Machine Learning).pdf>)의 §4.2에 있습니다.
 
 ### 관련 문서
 - [`ML_1/README.md`](./ML_1/README.md)
@@ -141,14 +139,14 @@ MNIST는 특징 비교 실험에 적합했고, SportsBall은 실제 이미지 �
 
 ![Representation learning evidence](assets/images/representation-latent-evidence.png)
 
-- 출처: `[2024-2_ML] Project1 specifications/Project.ipynb`, `mnist/mnist_latent_feature.ipynb`, `sportsball/sportsball_latent_feature.ipynb`
-- 구성: K-Means, GMM, t-SNE 기반 feature-space 시각화
-- 의미: MNIST와 SportsBall이 latent space에서 얼마나 다르게 분리되는지, 그리고 그 차이가 왜 중요한지 보여 줍니다.
+아래쪽 두 패널의 t-SNE 점 하나는 테스트 이미지 한 장의 특징 벡터를 2차원으로 줄인 결과이며, 색은 정답 클래스입니다. MNIST에서는 같은 색이 모이는 구간이 뚜렷하고 SportsBall에서는 색이 더 많이 겹칩니다. t-SNE는 시각적 진단 도구라 축이나 군집 간 거리를 성능 지표로 해석할 수 없습니다.
+
+[MNIST 노트북](mnist/mnist_latent_feature.ipynb) · [SportsBall 노트북](sportsball/sportsball_latent_feature.ipynb) · [실행 경로와 평가 한계](ML_2/README.md#notes-before-reproducing)
 
 ### 관련 문서
 - [`ML_2/README.md`](./ML_2/README.md)
-- [`ML_2 최종 보고서 PDF`](<./ML_2/ML프로젝트2_02팀/ML_2(Image Classification  with Representation Learning).pdf>)
-- [`ML_2 발표자료 PDF`](<./ML_2/ML프로젝트2_02팀/ML_2(ppt).pdf>)
+- [`ML_2 최종 보고서 PDF`](<./ML_2/ML프로젝트2_02팀/ML_2(Image Classification  with Representation Learning).pdf>)
+- [`ML_2 발표자료 PDF`](<./ML_2/ML프로젝트2_02팀/ML_2(ppt).pdf>)
 
 ## 구현 과정에서 배운 점
 
@@ -160,18 +158,10 @@ MNIST는 특징 비교 실험에 적합했고, SportsBall은 실제 이미지 �
 
 ## 저장소 구성
 
-- `ML_1`
-  고전적 이미지 분류 팀 프로젝트 최종 보고서, 발표자료, 코드
-- `ML_1(개인적으로 진행한 실험과정)`
-  수업 프로젝트를 진행하며 직접 확장한 전처리 조합 탐색, ROI 실험, 특징 추출 비교 로그
-- `ML_2`
-  표현학습 팀 프로젝트 최종 보고서, 발표자료, 코드
-- `assets/images`
-  보고서, 발표자료, 노트북 출력에서 뽑은 시각 자료
-- `[2024-2_ML] Project1 specifications`
-  과제 명세와 클러스터링/시각화 노트북
-- `datas`, `mnist`, `sportsball`
-  실험 데이터와 표현학습 구현 노트북
+- `ML_1`, `ML_2` · 팀 보고서와 발표자료
+- `ML_1(개인적으로 진행한 실험과정)` · SportsBall 전처리와 모델 비교를 정리한 개인 실험 설명
+- `assets/images` · 보고서, 발표자료, 노트북에서 보존한 시각 자료
+- `datas`, `mnist`, `sportsball` · 수업용 데이터 분할, CNN·표현학습 노트북과 체크포인트 일부
 
 ## 결론
 
